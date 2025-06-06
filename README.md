@@ -37,4 +37,15 @@ Wyłącza ODROIDa, który ma postawiony serwer:
 
 Wysyłanie poleceń do ESP8266, który przekazuje je w pod sieci lokalnej (zawierającej tylko ESP-8266 i ESP-01S):
 - http://192.168.55.224/turnRelayOffOnESP01 (Uruchamia całą sekwencje POWER DOWN, z czekaniem na wyłączenie ODROIDa)
-- http://192.168.55.224/turnRelayOnOnESP01 
+- http://192.168.55.224/turnRelayOnOnESP01
+
+# Opis plików umieszczonych w repozytorium:
+- ESP01.c → Program wgrany do ESP 01S
+- ESP8266.c → Program wgrany do ESP 8266 + NodeMCU
+- ESP_deepSleep_test.c → Program testowy do sprawdzania czy płytka obsłguje poprawnie wchodzenie w deep sleep i wybudzanie się z niego.
+- index.html → kod strony na panamint
+- update_status.php → skrypt do zmienia stanu w pliku status.txt
+- odroid_shutdown_server.py → skrypt serwera HTTP postawionego na ODROID-M1
+- odroid_shutdown.service → plik konfiguracyjny używany przez system Linux do zarządzania usługami na ODROID-M1
+
+
