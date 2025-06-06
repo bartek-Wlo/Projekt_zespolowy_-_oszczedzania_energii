@@ -3,11 +3,6 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h> // Potrzebne do wysyłania żądań do ESP-01
 
-/********************************************************************
- *        Żeby kod działał: należy zewrzeć piny: D0 z RST.          *
- *        W czasie wgrywania kody pinu muszą być ROZWARTE!          *
- ********************************************************************/
-
 #define uS_TO_S_FACTOR 1000000ULL  // Współczynnik konwersji z mikrosekund na sekundy
 #define TIME_TO_SLEEP  10          // Czas, na jaki ESP8266 pójdzie spać (w sekundach) - 1.5 minuty = 90 sekund
 
@@ -18,7 +13,8 @@ const char* ap_password = "espProjekt";
 // Dane logowania do istniejącej sieci WiFi (np. router domowy)
 const char* sta_ssid = "Straßenbahn_33";
 const char* sta_password = "gyiu8623";
-const char* serverUrl = "https://d4ad-156-17-147-14.ngrok-free.app/status"; // <<<<< ZMIEŃ NA AKTUALNY !!!!!
+const char* serverUrl = "https://panamint.kcir.pwr.edu.pl/~bwlodarc/PROJEKT/status.txt"; //     <<<<< ZMIEŃ NA AKTUALNY !!!!!
+const char* SHA1 = "A5 D1 7E 41 9B AD 37 F1 C0 BB 5E 0F 0D 4C 90 CB 41 F3 5F CB"; //            <<<<< ZMIEŃ NA AKTUALNY !!!!!
 bool GoDeepSleepMode = false;
 
 ESP8266WebServer server(80);
@@ -67,9 +63,9 @@ void setup() {
   } else {Serial.println(" | Błąd DNS! ESP nie może rozwiązać nazw hostów.");}
   /******************************* Zczytywanie komuniaktu z zdalnego serwera.  *****************************/
   Serial.println("\n HTTP: Rozpoczynam połączenie z z serwerem.");
-  // WiFiClientSecure client;
+  WiFiClientSecure client;
   // client.setInsecure(); 
-  // client.setFingerprint("17 01 44 C5 57 6E E9 C2 DA 5E 9B 18 C1 CA BE B6 6D 3A C7 4D");
+  client.setFingerprint(SHA1);
   HTTPClient http;
   delay(500);
   http.begin(client, serverUrl);
