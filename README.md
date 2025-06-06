@@ -49,5 +49,6 @@ Wysyłanie poleceń do ESP8266, który przekazuje je w pod sieci lokalnej (zawie
 - http://192.168.55.224/turnRelayOffOnESP01 (Uruchamia całą sekwencje POWER DOWN, z czekaniem na wyłączenie ODROIDa)
 - http://192.168.55.224/turnRelayOnOnESP01
 
-
+# Podsumowanie, Uwagi
+ESP 8266 + Wemos D1 R1 WiFi → nie obsługuje poprawnie trybu deep sleep, zespołowi nie udało się doprwadzić do systułacji w której sam się budzi.
 
