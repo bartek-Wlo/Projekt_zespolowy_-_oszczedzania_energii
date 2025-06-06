@@ -1,3 +1,13 @@
+# Opis plików umieszczonych w repozytorium:
+- `ESP01.c` → Program wgrany do ESP 01S
+- `ESP8266.c` → Program wgrany do ESP 8266 + NodeMCU
+- `ESP_deepSleep_test.c` → Program testowy do sprawdzania czy płytka obsłguje poprawnie wchodzenie w deep sleep i wybudzanie się z niego.
+- `index.html` → kod strony na panamint
+- `update_status.php` → skrypt do zmienia stanu w pliku status.txt
+- `odroid_shutdown_server.py` → skrypt serwera HTTP postawionego na ODROID-M1
+- `odroid_shutdown.service` → plik konfiguracyjny używany przez system Linux do zarządzania usługami na ODROID-M1
+
+
 # Wstęp
 Projekt miał na celu stworzenie systemu oszczędzania energii dla urządzeń takich jak: routery, Raspberry Pi, ODROID, (W projekcie użyto ODROID-M1), przy wykorzystaniu mikrokontrolera ESP32/ESP8266, sterującego przekaźnikiem.
 
@@ -39,13 +49,5 @@ Wysyłanie poleceń do ESP8266, który przekazuje je w pod sieci lokalnej (zawie
 - http://192.168.55.224/turnRelayOffOnESP01 (Uruchamia całą sekwencje POWER DOWN, z czekaniem na wyłączenie ODROIDa)
 - http://192.168.55.224/turnRelayOnOnESP01
 
-# Opis plików umieszczonych w repozytorium:
-- ESP01.c → Program wgrany do ESP 01S
-- ESP8266.c → Program wgrany do ESP 8266 + NodeMCU
-- ESP_deepSleep_test.c → Program testowy do sprawdzania czy płytka obsłguje poprawnie wchodzenie w deep sleep i wybudzanie się z niego.
-- index.html → kod strony na panamint
-- update_status.php → skrypt do zmienia stanu w pliku status.txt
-- odroid_shutdown_server.py → skrypt serwera HTTP postawionego na ODROID-M1
-- odroid_shutdown.service → plik konfiguracyjny używany przez system Linux do zarządzania usługami na ODROID-M1
 
 
