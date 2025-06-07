@@ -69,6 +69,7 @@ ESP 8266 + Wemos D1 R1 WiFi → nie obsługuje poprawnie trybu deep sleep, zespo
 - Kod był wgrywany na Board: Generic ESP8266 Module.
 
 |3V3|RX|
+|-|-|
 |RST|GPIO0|
 |EN|GPIO2|
 |TX|GND|
