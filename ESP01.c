@@ -3,6 +3,11 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h> // Potrzebne dla własnego serwera ESP-01
 
+/********************************************************************
+ |        Żeby kod działał: należy zewrzeć piny: TX z RST.          |
+ |      W readMe jest dokłady opis wgrywania kodu na ESP 01S        |
+ ********************************************************************/
+
 // Dane logowania do sieci AP stworzonej przez ESP8266
 const char* ssid = "ESP_projekt_2025";
 const char* password = "espProjekt";
@@ -39,16 +44,16 @@ void loop() {
   esp01_server.handleClient();
   /*Zmienne static są INICJALIZOWANE TYLKO przy pierwszym uruchomieniu pętli */
   static unsigned long lastReconnectAttempt = 0;
-  static bool wasConnected = WiFi.status() == WL_CONNECTED;
+  static bool wasConnected = false; /* false, by uruchomić sendToServer()    */
 
   if (WiFi.status() != WL_CONNECTED) { /*   jeżeli NIE ma połączenia z WiFi: */
     if (wasConnected) {
       Serial.println("Utracono połączenie z WiFi!");
       wasConnected = false;/* Poprzedni status połączenia dla następnej pętli*/
     }
-    /* Czy upłyneło już 10 [s] od ostatniej próby połączenia
-    [CZAS OD URUCHOMIENIA] - [CZAS OSTATNIEJ PRÓBY POŁĄCZENIA] > 10 [s]      */
-    if (millis() - lastReconnectAttempt > 10000) {
+    /* Czy upłyneło już 20 [s] od ostatniej próby połączenia
+    [CZAS OD URUCHOMIENIA] - [CZAS OSTATNIEJ PRÓBY POŁĄCZENIA] > 20 [s]      */
+    if (millis() - lastReconnectAttempt > 20000) {
       lastReconnectAttempt = millis(); /*         millis() zwraca [ms] od    */
       connectToWiFi(); /*                         uruchomienia urządzenia.   */
     }
@@ -75,7 +80,7 @@ void connectToWiFi() { /*                     FUN DO ŁĄCZENIA SIĘ Z SERWEREM 
   WiFi.begin(ssid, password);
 
   int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) { /* Przez 10 [s]   */
     delay(500);
     Serial.print(".");
     attempts++;

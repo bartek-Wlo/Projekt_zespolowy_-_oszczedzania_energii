@@ -3,6 +3,11 @@ import os
 
 app = Flask(__name__)
 
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return "pong", 200  # Prosta odpowiedź
+
 @app.route("/shutdown", methods=["GET"])
 def shutdown():
     os.system("sudo /sbin/poweroff")
