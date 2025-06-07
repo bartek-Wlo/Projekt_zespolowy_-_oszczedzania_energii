@@ -19,6 +19,7 @@ Projekt miał na celu stworzenie systemu oszczędzania energii dla urządzeń ta
 | ESP 8266 + NodeMCU V3 z CH340 | Duży czarny ESP | "ESP-C8591D" | ec:fa:bc:c8:59:1d |
 | ODROID-M1 | Mini komputer na zielonej płytce | "odroidm1" | 16:6b:12:d1:a7:91 |
 | TL-WN725N | USB Wi-Fi adapter podłączony do ODROIDa | | 30:68:93:7b:30:7d |
+| ESP-01S UART CH340 | Programator adapter USB do ESP-01S | | |
 
 
 ## Opis Cyklu działania:
@@ -52,3 +53,22 @@ Wysyłanie poleceń do ESP8266, który przekazuje je w pod sieci lokalnej (zawie
 # Podsumowanie, Uwagi
 ESP 8266 + Wemos D1 R1 WiFi → nie obsługuje poprawnie trybu deep sleep, zespołowi nie udało się doprwadzić do systułacji w której sam się budzi.
 
+## Wgrywanie kodu na ESP 01S
+- Za pomocą ESP-01S UART CH340 jest dość problematyczne i wymaga posiadania kabli Arduino męsko-męskich.
+- Należy zewrzeć piny `RST` + `TX` i przez cały okres wgrywania kodu do pokazania 100% należy je zwierać.
+- Procedura:
+1. Podłączyć programator do wejścia USB od PC z Arduino IDE.
+2. Zwerzeć pny  `RST` + `TX`
+3. Odłączyć programator od wejścia USB z PC (Warto mieć jakiś przedłużacz do tego kroku, bez niego może być niemożliwe cągłe trzmanie zwartych pinów)
+4. Ponownie podłączyć programator.
+5. Wgrać program
+6. Zaczekać do 100%
+7. Rozwerzeć piny
+8. Ponownie rozłączyć programator
+9. Doprowadzić zasialnie do ESP (ESP uruchamia się z nowym programem.)
+- Kod był wgrywany na Board: Generic ESP8266 Module.
+
+|3V3|RX|
+|RST|GPIO0|
+|EN|GPIO2|
+|TX|GND|
