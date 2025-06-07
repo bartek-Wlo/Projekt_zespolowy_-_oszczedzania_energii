@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<!-- Nagłówek strony: tytuł, czcionka Google, styl CSS -->
+<head>
+  <meta charset="UTF-8">
+  <title>System Oszczędzania Energii</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Stylizacja całego widoku strony -->
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #206040;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #fff;
+      padding: 60px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 600px;
+      width: 95%;
+    }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+    .status {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      animation: pulse 2s infinite;
+    }
+    .status.on { color: #27ae60; }
+    .status.off { color: #c0392b; }
+    .button {
+      font-size: 20px;
+      padding: 15px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s;
+    }
+    .button:hover { transform: scale(1.05); }
+    .on-button { background-color: #27ae60; color: white; }
+    .off-button { background-color: #c0392b; color: white; }
+    .footer {
+      margin-top: 30px;
+      font-size: 13px;
+      color: #999;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<!-- Główna zawartość strony  -->
+<body>
+  <div class="container">
+    <h1>System Oszczędzania Energii</h1>
+    <div id="status" class="status">Ładowanie...</div>
+    <button class="button on-button" onclick="setStatus('ON')">Włącz</button>
+    <button class="button off-button" onclick="setStatus('OFF')">Wyłącz</button>
+    <div class="footer">2025 Projekt Zespołowy • PWr</div>
+  </div>
+
+  <!-- Skrypt JS: logika odczytu i ustawiania statusu -->
+  <script>
+    function updateStatus() { /* Funkcja odczytująca status z pliku status.txt */
+	fetch('status.txt')
+	    .then(response => response.text())
+	    .then(data => {
+		const status = data.trim();
+		const statusEl = document.getElementById('status');
+		if (status === 'ON') {
+		    statusEl.textContent = 'Włączony';
+		    statusEl.classList.add('on');
+		    statusEl.classList.remove('off');
+		} else if (status === 'OFF') {
+		    statusEl.textContent = 'Wyłączony';
+		    statusEl.classList.add('off');
+		    statusEl.classList.remove('on');
+		} else {
+		    statusEl.textContent = 'Nieznany status';
+		}
+	    });
+    }
+
+    function setStatus(value) { /* Funkcja ustawiająca status (wysyła żądanie do update_status.php) */
+	fetch('update_status.php?status=' + value)
+	    .then(() => updateStatus());
+    }
+
+    updateStatus(); // Odczyt statusu przy załadowaniu strony
+  </script>
+</body>
+</html>
