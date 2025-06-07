@@ -1,0 +1,15 @@
+[Unit]
+Description=Odroid Flask Shutdown Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/odroid/odroid_shutdown_server.py
+WorkingDirectory=/home/odroid
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=odroid
+Group=odroid
+
+[Install]
+WantedBy=multi-user.target
