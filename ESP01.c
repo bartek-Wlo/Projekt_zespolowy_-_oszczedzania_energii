@@ -6,6 +6,7 @@
 /********************************************************************
  |        Żeby kod działał: należy zewrzeć piny: TX z RST.          |
  |      W readMe jest dokłady opis wgrywania kodu na ESP 01S        |
+ |              HIGH to zwarty NO, a LOW to zwarty NC               |
  ********************************************************************/
 
 // Dane logowania do sieci AP stworzonej przez ESP8266
@@ -31,7 +32,7 @@ void handleRoot();
 void setup() {
   Serial.begin(115200);
   pinMode(relayPin, OUTPUT);
-  digitalWrite(relayPin, LOW); // Stan początkowy przekaźnika: WYŁĄCZONY (LOW)
+  digitalWrite(relayPin, HIGH); // Stan początkowy przekaźnika: WYŁĄCZONY (LOW)
   Serial.println("Przekaźnik inicjalnie WYŁĄCZONY (LOW).");
 
   connectToWiFi();
@@ -145,21 +146,21 @@ void startWebServer() {
 /*\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\  mini  Funkcje  /‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/*/
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void handleRelayON() {
-  digitalWrite(relayPin, HIGH); // Włącz przekaźnik (stan wysoki)
+  digitalWrite(relayPin, LOW); // Włącz przekaźnik (stan wysoki)
   Serial.println("Przekaźnik WŁĄCZONY (HIGH) na żądanie.");
   esp01_server.send(200, "text/plain", "Relay is ON");
 }
 
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void handleRelayOFF() {
-  digitalWrite(relayPin, LOW); // Wyłącz przekaźnik (stan niski)
+  digitalWrite(relayPin, HIGH); // Wyłącz przekaźnik (stan niski)
   Serial.println("Przekaźnik WYŁĄCZONY (LOW) na żądanie.");
   esp01_server.send(200, "text/plain", "Relay is OFF");
 }
 
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void handleRoot() {
- String status = (digitalRead(relayPin) == HIGH) ? "ON" : "OFF";
+ String status = (digitalRead(relayPin) == LOW) ? "ON" : "OFF";
  esp01_server.send(200, "text/plain", "ESP-01 Relay Control. Current state: " + status +
  "\nUse /relayON to turn ON\nUse /relayOFF to turn OFF");
 }

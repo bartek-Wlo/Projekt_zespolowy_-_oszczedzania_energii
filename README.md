@@ -2,6 +2,7 @@
 - `ESP01.c` → Program wgrany do ESP 01S
 - `ESP8266.c` → Program wgrany do ESP 8266 + NodeMCU
 - `ESP_deepSleep_test.c` → Program testowy do sprawdzania czy płytka obsłguje poprawnie wchodzenie w deep sleep i wybudzanie się z niego.
+- `ESP_wemos.c` → Program do wyłączenia płytki wemos, gdy pracuje jako zasilacz.
 - `index.html` → kod strony na panamint
 - `update_status.php` → skrypt do zmienia stanu w pliku status.txt
 - `odroid_shutdown_server.py` → skrypt serwera HTTP postawionego na ODROID-M1
