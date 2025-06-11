@@ -97,7 +97,8 @@ void loop() {
     if(powerUpSequence()) turnON = true;
     lastTurnOnAttempt = millis();
   } else if ((turnON)&&(odroidON==false)&&(millis()-lastTurnOnAttempt > 20000)) {
-    if(pingOdroidServer(pingAttempt)) odroidON = true; /* CO 20 [s] sprawdza */
+    if(sendRelayCommandToESP01(esp01_ip_address, "/")==false) {turnON = false; pingAttempt = 0;}
+    else if(pingOdroidServer(pingAttempt)) odroidON = true; /* CO 20 [s] sprawdza */
     else {
       lastTurnOnAttempt = millis();
       if( ++pingAttempt >= 6) {
