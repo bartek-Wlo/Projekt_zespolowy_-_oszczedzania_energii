@@ -161,6 +161,6 @@ void handleRelayOFF() {
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/
 void handleRoot() {
  String status = (digitalRead(relayPin) == LOW) ? "ON" : "OFF";
- esp01_server.send(200, "text/plain", "ESP-01 Relay Control. Current state: " + status +
- "\nUse /relayON to turn ON\nUse /relayOFF to turn OFF");
+ esp01_server.send(200, "text/plain", "ESP-01 Relay Control. Current state: " + status);// +
+//  "\nUse /relayON to turn ON\nUse /relayOFF to turn OFF");
 }
