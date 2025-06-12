@@ -9,7 +9,7 @@
  ********************************************************************/
 
 #define uS_TO_S_FACTOR 1000000ULL  // Współczynnik konwersji z mikrosekund na sekundy
-#define TIME_TO_SLEEP  20          // Czas, na jaki ESP8266 pójdzie spać (w sekundach) - 0.33 minuty = 20 sekund
+int TIME_TO_SLEEP = 20          // Czas, na jaki ESP8266 pójdzie spać (w sekundach) - 0.33 minuty = 20 sekund
 
 // Dane logowania do sieci, którą ESP8266 będzie tworzyć (Access Point)
 const char* ap_ssid = "ESP_projekt_2025";
@@ -18,7 +18,7 @@ const char* ap_password = "espProjekt";
 const char* sta_ssid = "Straßenbahn_33"; /*  Nazwa sieci WiFi udostępnianej  */
 const char* sta_password = "gyiu8623"; /*    Hasło sieci WiFi udostępnianej  */
 
-const char* serverUrl = "https://panamint.kcir.pwr.edu.pl/~bwlodarc/PROJEKT/status.txt"; //         <<<<< ZMIEŃ NA AKTUALNY !!!!!
+const char* serverUrl = "https://panamint.kcir.pwr.edu.pl/~mlenczuk/Projekt/status.txt"; //         <<<<< ZMIEŃ NA AKTUALNY !!!!!
 const char* SHA1 =      "A5 D1 7E 41 9B AD 37 F1 C0 BB 5E 0F 0D 4C 90 CB 41 F3 5F CB";  //          <<<<< ZMIEŃ NA AKTUALNY !!!!!
 
 bool GoDeepSleepMode = true; /* Gdy nie nawiąże połączenia będzie się usypiać*/
@@ -39,6 +39,7 @@ void restartSequence();
 
 void setupAccessPoint();
 void setupHTTPcommands();
+void getSleepTimeFromServer();
 
 bool sendRelayCommandToESP01(String host_ip, const char* command_path);
 bool sendShutdownCommandToOdroid(); /* Zmienne Globalne do Funkcji:          */
@@ -59,6 +60,7 @@ void setup() {
 
   setupAccessPoint();
   setupHTTPcommands();
+  getSleepTimeFromServer();
 
   server.begin();
   Serial.println(" | Serwer HTTP uruchomiony. Nasłuchuje na obu interfejsach.");
@@ -277,6 +279,27 @@ void setupHTTPcommands() {
     powerUpSequence();
   });
 }
+
+
+void getSleepTimeFromServer() {
+  Serial.println("ESP: Pobieranie sleep_time...");
+  WiFiClientSecure client;
+  client.setFingerprint(SHA1);
+  HTTPClient http;
+  http.begin(client, "https://panamint.kcir.pwr.edu.pl/~mlenczuk/Projekt/sleep_time.txt");
+
+  int httpCode = http.GET();
+  if (httpCode == HTTP_CODE_OK) {
+    String payload = http.getString();
+    TIME_TO_SLEEP = payload.toInt();
+    Serial.println("ESP: Odczytano TIME_TO_SLEEP = " + String(TIME_TO_SLEEP));
+  } else {
+    Serial.println("ESP: Nie udało się pobrać sleep_time.txt");
+  }
+
+  http.end();
+}
+
 
 
 /*/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\_/‾\*/

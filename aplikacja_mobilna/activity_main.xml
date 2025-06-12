@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Status: ..."
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/sleepTimeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Czas sleep: ..."
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/statusText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+
+    <Button
+        android:id="@+id/btnOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Włącz"
+        app:layout_constraintTop_toBottomOf="@id/sleepTimeText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/btnOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wyłącz"
+        app:layout_constraintTop_toBottomOf="@id/btnOn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Odśwież"
+        app:layout_constraintTop_toBottomOf="@+id/btnOff"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp"
+        />
+
+
+
+    <EditText
+        android:id="@+id/timeInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Czas deep sleep (s)"
+        android:inputType="number"
+        android:textColor="@android:color/black"
+        app:layout_constraintTop_toBottomOf="@id/btnRefresh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="32dp" />
+
+    <Button
+        android:id="@+id/btnSetTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ustaw czas sleep"
+        app:layout_constraintTop_toBottomOf="@id/timeInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/btnShowHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pokaż historię"
+        app:layout_constraintTop_toBottomOf="@+id/btnSetTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <Button
+        android:id="@+id/btnClearHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wyczyść historię"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnShowHistory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <TextView
+        android:id="@+id/historyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historia zmian statusu"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/btnClearHistory"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
