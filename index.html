@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
   <title>System Oszczędzania Energii</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Stylizacja całego widoku strony -->
   <style>
     body {
@@ -14,21 +14,30 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
     .container {
       background-color: #fff;
-      padding: 60px;
+      padding: 40px 60px;
       border-radius: 20px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
       text-align: center;
-      max-width: 600px;
-      width: 95%;
+      max-width: 800px;
+      width: 100%;
     }
     h1 {
       color: #2c3e50;
       margin-bottom: 30px;
+    }
+    h2 {
+        color: #2c3e50;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
     }
     .status {
       font-size: 28px;
@@ -60,6 +69,60 @@
       50% { opacity: 0.7; }
       100% { opacity: 1; }
     }
+
+    /* Style dla wyświetlania logów */
+    .log-display {
+      background-color: #f0f0f0;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-align: left;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+      color: #333;
+    }
+
+    /* Nowe style dla sekcji czasu uśpienia */
+    .sleep-time-control {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 12px;
+        border: 1px solid #eee;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px; /* Dodatkowy margines na dole */
+    }
+    .sleep-time-control label {
+        font-weight: bold;
+        color: #555;
+    }
+    .sleep-time-control input[type="number"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        width: 150px;
+        box-sizing: border-box;
+    }
+    .sleep-time-control button {
+        margin: 0;
+    }
+    .feedback-message {
+        margin-top: 10px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    .feedback-message.success { color: #27ae60; }
+    .feedback-message.error { color: #c0392b; }
+
   </style>
 </head>
 
@@ -70,11 +133,28 @@
     <div id="status" class="status">Ładowanie...</div>
     <button class="button on-button" onclick="setStatus('ON')">Włącz</button>
     <button class="button off-button" onclick="setStatus('OFF')">Wyłącz</button>
+
+    <h2>Ustaw Czas Uśpienia ESP</h2>
+    <div class="sleep-time-control">
+      <label for="sleepTimeInput">Czas uśpienia (1 [s] - 604800 [tydzień]):</label>
+      <input type="number" id="sleepTimeInput" min="1" max="604800" value="300">
+      <button class="button on-button" onclick="setSleepTime()">Ustaw Czas [s]</button> 
+    </div>
+    <div id="sleepTimeFeedback" class="feedback-message"></div>
+    <div style="margin-top: 10px; font-size: 16px; color: #555;">
+        Aktualny czas uśpienia: <span id="currentSleepTime">Ładowanie...</span> sekund.
+    </div>
+
+    
+    <h2>Wiadomości Systemowe</h2>
+    <div id="messageLog" class="log-display">Ładowanie logów...</div>
+
     <div class="footer">2025 Projekt Zespołowy • PWr</div>
   </div>
 
-  <!-- Skrypt JS: logika odczytu i ustawiania statusu -->
+  <!-- Skrypt JS: logika odczytu i ustawiania statusu oraz wiadomości -->
   <script>
+    // --- Funkcje do zarządzania statusem ON/OFF (istniejące) ---
     function updateStatus() { /* Funkcja odczytująca status z pliku status.txt */
 	fetch('status.txt')
 	    .then(response => response.text())
@@ -92,15 +172,120 @@
 		} else {
 		    statusEl.textContent = 'Nieznany status';
 		}
-	    });
+	    })
+        .catch(error => {
+            console.error('Błąd podczas ładowania statusu:', error);
+            document.getElementById('status').textContent = 'Błąd ładowania statusu.';
+        });
     }
 
     function setStatus(value) { /* Funkcja ustawiająca status (wysyła żądanie do update_status.php) */
 	fetch('update_status.php?status=' + value)
-	    .then(() => updateStatus());
+	    .then(() => updateStatus())
+        .catch(error => {
+            console.error('Błąd podczas ustawiania statusu:', error);
+            alert('Nie udało się ustawić statusu.');
+        });
     }
 
-    updateStatus(); // Odczyt statusu przy załadowaniu strony
+    // --- Funkcje do zarządzania wiadomościami (pozostała tylko funkcja wyświetlająca) ---
+    function updateMessageLog() {
+        fetch('log.txt')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        return "Brak dotychczasowych wiadomości w logu.";
+                    }
+                    throw new Error('Błąd sieci: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(data => {
+                const logEl = document.getElementById('messageLog');
+                logEl.textContent = data;
+                logEl.scrollTop = logEl.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Błąd podczas ładowania logu wiadomości:', error);
+                document.getElementById('messageLog').textContent = 'Błąd ładowania logu wiadomości.';
+            });
+    }
+
+    // --- Nowe funkcje do zarządzania czasem uśpienia ---
+
+    function updateCurrentSleepTimeDisplay() {
+        // Funkcja odczytująca aktualny czas uśpienia z pliku sleep_time.txt
+        fetch('sleep_time.txt')
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        return "Brak danych"; // Plik nie istnieje, brak ustawionego czasu
+                    }
+                    throw new Error('Błąd sieci: ' + response.statusText);
+                }
+                return response.text();
+            })
+            .then(data => {
+                const sleepTimeEl = document.getElementById('currentSleepTime');
+                sleepTimeEl.textContent = data.trim(); // Wyświetl odczytaną wartość
+            })
+            .catch(error => {
+                console.error('Błąd podczas ładowania czasu uśpienia:', error);
+                document.getElementById('currentSleepTime').textContent = 'Błąd ładowania.';
+            });
+    }
+
+    function setSleepTime() {
+        // Funkcja wysyłająca czas uśpienia do sleep_time.php
+        const sleepTimeInput = document.getElementById('sleepTimeInput');
+        const timeValue = parseInt(sleepTimeInput.value); // Pobierz wartość i przekształć na liczbę
+        const feedbackEl = document.getElementById('sleepTimeFeedback');
+
+        // Walidacja po stronie klienta (dodatkowa warstwa ochronna)
+        if (isNaN(timeValue) || timeValue <= 0 || timeValue > 604800) {
+            feedbackEl.classList.remove('success');
+            feedbackEl.classList.add('error');
+            feedbackEl.textContent = 'Wprowadź poprawną wartość (1-604800 sekund).';
+            return;
+        }
+
+        const url = `sleep_time.php?time=${timeValue}`;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                console.log('Odpowiedź serwera (sleep_time.php):', data);
+                feedbackEl.classList.remove('success', 'error'); // Usuń poprzednie klasy
+                if (data.trim() === 'OK') {
+                    feedbackEl.classList.add('success');
+                    feedbackEl.textContent = 'Czas uśpienia ustawiony pomyślnie!';
+                    updateCurrentSleepTimeDisplay(); // Odśwież wyświetlaną wartość po sukcesie
+                } else {
+                    feedbackEl.classList.add('error');
+                    feedbackEl.textContent = 'Błąd: ' + data.trim(); // Wyświetl błąd z PHP
+                }
+            })
+            .catch(error => {
+                console.error('Błąd podczas ustawiania czasu uśpienia:', error);
+                feedbackEl.classList.remove('success');
+                feedbackEl.classList.add('error');
+                feedbackEl.textContent = 'Nie udało się ustawić czasu uśpienia (błąd połączenia).';
+            });
+            // Wyczyść wiadomość po kilku sekundach
+            setTimeout(() => {
+                feedbackEl.textContent = '';
+                feedbackEl.classList.remove('success', 'error');
+            }, 5000);
+    }
+
+
+    // --- Wywołania funkcji przy załadowaniu strony ---
+    updateStatus();
+    updateMessageLog();
+    updateCurrentSleepTimeDisplay(); // Nowa funkcja wywoływana przy ładowaniu
+
+    // Automatyczne odświeżanie logu co 5 sekund
+    setInterval(updateMessageLog, 5000);
   </script>
 </body>
 </html>
