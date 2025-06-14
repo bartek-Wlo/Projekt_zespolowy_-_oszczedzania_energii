@@ -43,6 +43,10 @@ Projekt miał na celu stworzenie systemu oszczędzania energii dla urządzeń ta
 Główny interfejs sterowania systemem, punkt z którego ESP8266 odbiera wiadomość o wykonaniu pracy albo ponownym uśpieniu
 - https://panamint.kcir.pwr.edu.pl/~bwlodarc/PROJEKT/update_status.php?status=OFF
 - https://panamint.kcir.pwr.edu.pl/~bwlodarc/PROJEKT/update_status.php?status=ON
+Dotatkowy interface nadający logi o mówiące o statusie projektu:
+- https://panamint.kcir.pwr.edu.pl/~bwlodarc/PROJEKT/log_message.php?numer=0&nazwa="TEST"
+Gdzie `numer` to  numer operacji tłumaczony na konretny stan, `nazwa` to zazwa nadawcy logu, oprócz IP.
+  
 ## Sterowanie systemu przez HTTP (HTTP control interface) w sieci lokalnej
 Wyłącza ODROIDa, który ma postawiony serwer:
 - http://192.168.55.83:5000/shutdown
