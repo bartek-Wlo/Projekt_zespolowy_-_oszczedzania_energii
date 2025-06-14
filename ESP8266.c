@@ -9,7 +9,7 @@
  ********************************************************************/
 
 #define uS_TO_S_FACTOR 1000000ULL  // Współczynnik konwersji z mikrosekund na sekundy
-int TIME_TO_SLEEP = 20          // Czas, na jaki ESP8266 pójdzie spać (w sekundach) - 0.33 minuty = 20 sekund
+int TIME_TO_SLEEP = 20;          // Czas, na jaki ESP8266 pójdzie spać (w sekundach) - 0.33 minuty = 20 sekund
 
 // Dane logowania do sieci, którą ESP8266 będzie tworzyć (Access Point)
 const char* ap_ssid = "ESP_projekt_2025";
@@ -18,9 +18,10 @@ const char* ap_password = "espProjekt";
 const char* sta_ssid = "Straßenbahn_33"; /*  Nazwa sieci WiFi udostępnianej  */
 const char* sta_password = "gyiu8623"; /*    Hasło sieci WiFi udostępnianej  */
 
-const char* serverUrl = "https://panamint.kcir.pwr.edu.pl/~bwlodarc/Projekt/";          //         <<<<< ZMIEŃ NA AKTUALNY !!!!!
-const char* serverUrlStatus = serverUrl + "status.txt";
-const char* serverUrlMesage = serverUrl + "log_message.php";
+const String serverUrl = "https://panamint.kcir.pwr.edu.pl/~bwlodarc/Projekt/";          //         <<<<< ZMIEŃ NA AKTUALNY !!!!!
+const String serverUrlStatus = serverUrl + "status.txt";
+const String serverUrlMesage = serverUrl + "log_message.php";
+const String serverUrlSleep  = serverUrl + "sleep_time.txt";
 const char* SHA1 =      "A5 D1 7E 41 9B AD 37 F1 C0 BB 5E 0F 0D 4C 90 CB 41 F3 5F CB";  //          <<<<< ZMIEŃ NA AKTUALNY !!!!!
 
 bool GoDeepSleepMode = true; /* Gdy nie nawiąże połączenia będzie się usypiać*/
@@ -33,7 +34,7 @@ void initializeSerialAndLED();
 bool connectToWiFiSTA();
 bool checkInternetConnection();
 void getCommandFromRemoteServer();
-String ESPname = "ESP8266 - serwer"
+String ESPname = "ESP8266 - serwer";
 void sendMessage(int operationNumber, String senderName);
 
 void enterDeepSleep();
@@ -91,7 +92,7 @@ void loop() {
     [CZAS OD URUCHOMIENIA] - [CZAS OSTATNIEJ PRÓBY POŁĄCZENIA] > 30 [s]      */
     if (millis() - lastReconnectAttempt > 30000) {
       lastReconnectAttempt = millis();
-      if( connectToWiFiSTA() /* Trwa 15 [s]*/) {wasConnected = true; void sendMessage(1, ESPname); /* Odzyskano połączenie*/}
+      if( connectToWiFiSTA() /* Trwa 15 [s]*/) {wasConnected = true; sendMessage(1, ESPname); /* Odzyskano połączenie*/}
       else ++ReconnectAttempt; 
       if(ReconnectAttempt >= 4) powerDownSequence(); /* Następuje po 2 [min] */
     } 
@@ -104,7 +105,7 @@ void loop() {
     lastTurnOnAttempt = millis();
   } else if ((turnON)&&(odroidON==false)&&(millis()-lastTurnOnAttempt > 20000)) {
     if(sendRelayCommandToESP01(esp01_ip_address, "/")==false) {turnON = false; pingAttempt = 0;}
-    else if(pingOdroidServer(pingAttempt)) {odroidON = true; void sendMessage(8, ESPname); /*  */} /* CO 20 [s] sprawdza */
+    else if(pingOdroidServer(pingAttempt)) {odroidON = true; sendMessage(8, ESPname); /*  */} /* CO 20 [s] sprawdza */
     else {
       lastTurnOnAttempt = millis();
       if( ++pingAttempt >= 6) {
@@ -180,8 +181,8 @@ void getCommandFromRemoteServer() { //‾‾‾‾‾‾‾Łączenie z zdalnym 
   if (httpCode == HTTP_CODE_OK) {
     String payload = http.getString();
     Serial.println(" HTTP: Odpowiedź z serwera: " + payload);
-    void sendMessage(1, ESPname); /* Połączono z Wifi, komunikat wysyłany z opuźnieniem do połaczenia z serwrem */
-    void sendMessage(2, ESPname); /* Połączone z serwerem */
+    sendMessage(1, ESPname); /* Połączono z Wifi, komunikat wysyłany z opuźnieniem do połaczenia z serwrem */
+    sendMessage(2, ESPname); /* Połączone z serwerem */
     
     if (payload == "ON") {Serial.println(" HTTP:    Stan: ON"); GoDeepSleepMode = false;} 
     else if (payload == "OFF") {Serial.println(" HTTP:   Stan: OFF"); GoDeepSleepMode = true;}
@@ -195,13 +196,15 @@ void getCommandFromRemoteServer() { //‾‾‾‾‾‾‾Łączenie z zdalnym 
 void sendMessage(int operationNumber, String senderName) {
   if (WiFi.isConnected()) {
     HTTPClient http;
+    WiFiClientSecure client;
+    client.setFingerprint(SHA1);
 
     // Tworzenie URL
-    String url = String(serverAddress) + "?numer=" + operationNumber + "&nazwa=" + senderName;
+    String url = String(serverUrlMesage) + "?numer=" + operationNumber + "&nazwa=" + senderName;
     Serial.print("Wysyłanie do: ");
     Serial.println(url);
 
-    http.begin(url); // Rozpoczęcie połączenia
+    http.begin(client, url); // Rozpoczęcie połączenia
 
     int httpCode = http.GET(); // Wykonanie zapytania GET
 
@@ -224,7 +227,7 @@ void sendMessage(int operationNumber, String senderName) {
 /*______________ENTER DEEP, SLEEP, POWER OFF, POWER ON, RESTART______________*/
 // if (GoDeepSleepMode) {
 void enterDeepSleep() { //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾Uruchamianie Deep Sleep‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-  void sendMessage(3, ESPname); /* Uruchamianie deeep sleep */
+  sendMessage(3, ESPname); /* Uruchamianie deeep sleep */
   Serial.println(" DS: Przygotowuję się do trybu Deep Sleep.");
   WiFi.mode(WIFI_OFF);
   WiFi.forceSleepBegin(); delay(1); // Krótka pauza dla stabilizacji
@@ -235,7 +238,7 @@ void enterDeepSleep() { //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾Uruchamia
 // }
 
 void powerDownSequence() {//‾‾‾‾‾‾‾‾‾‾‾‾‾Wyłączanie CAŁEGO systemu‾‾‾‾‾‾‾‾‾‾‾‾‾
-  void sendMessage(4, ESPname); /* Uruchamianie power down sequnece, przekaźnik OFF*/
+  sendMessage(4, ESPname); /* Uruchamianie power down sequnece, przekaźnik OFF*/
   Serial.println("\n OFF:   Procedura: Relay OFF");
     if(sendShutdownCommandToOdroid()) { // Opcjonalnie: endpoint do wyłączania przekaźnika na ESP-01
       Serial.print(" OFF:   Czekam na zamknięcie Odroid-M1\n");
@@ -249,7 +252,7 @@ void powerDownSequence() {//‾‾‾‾‾‾‾‾‾‾‾‾‾Wyłączanie 
 }
 
 bool powerUpSequence() {// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾Włączanie ODORID M1 systemu‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-  void sendMessage(5, ESPname); /* Uruchamianie ODORID M1, przekaźnik ON */
+  sendMessage(5, ESPname); /* Uruchamianie ODORID M1, przekaźnik ON */
   Serial.println("\n ON:    Procedura: Relay ON");
   if(sendRelayCommandToESP01(esp01_ip_address, "/relayON") == false) return false;
   server.send(200, "text/plain", "Polecenie /relayON wysłane do ESP-01.");
@@ -257,7 +260,7 @@ bool powerUpSequence() {// ‾‾‾‾‾‾‾‾‾‾‾‾‾‾Włączanie
 }
 
 void restartSequence() { //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾Restart ODROID M1 systemu‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-  void sendMessage(6, ESPname); /* Restart ODORID M1, Przekaźnik -> OFF -> ON*/
+  sendMessage(6, ESPname); /* Restart ODORID M1, Przekaźnik -> OFF -> ON*/
   Serial.println("\n REBOOT: Restart zasilania Odroid-M1");
   sendRelayCommandToESP01(esp01_ip_address, "/relayOFF"); // Odcięcie zasilania
   server.send(200, "text/plain", "Polecenie /relayOFF wysłane do ESP-01.");
@@ -269,7 +272,7 @@ void restartSequence() { //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾Restart 
 
 
 void setupAccessPoint() { //‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾WiFi Access Point‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-  void sendMessage(7, ESPname); /*  */
+  sendMessage(7, ESPname); /*  */
   Serial.print(" | Tworzenie Access Point: "); /* Tworzy własną sieć Wi-Fi. - Access Point (AP)*/
   Serial.println(ap_ssid);
   WiFi.softAP(ap_ssid, ap_password);
@@ -326,7 +329,7 @@ void getSleepTimeFromServer() {
   WiFiClientSecure client;
   client.setFingerprint(SHA1);
   HTTPClient http;
-  http.begin(client, "https://panamint.kcir.pwr.edu.pl/~mlenczuk/Projekt/sleep_time.txt");
+  http.begin(client, serverUrlSleep);
 
   int httpCode = http.GET();
   if (httpCode == HTTP_CODE_OK) {
