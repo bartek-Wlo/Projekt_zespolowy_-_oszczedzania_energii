@@ -5,8 +5,16 @@
 - `ESP_wemos.c` → Program do wyłączenia płytki wemos, gdy pracuje jako zasilacz.
 - `index.html` → kod strony na panamint
 - `update_status.php` → skrypt do zmienia stanu w pliku status.txt
+- `log_message.php` → skrypt do przyjmowania wiadomość od ESP8266
+- `update_sleep.php` → skrypt do zwaracania czasu uśpienia do ESP8266
 - `odroid_shutdown_server.py` → skrypt serwera HTTP postawionego na ODROID-M1
 - `odroid_shutdown.service` → plik konfiguracyjny używany przez system Linux do zarządzania usługami na ODROID-M1
+
+## Dodatkowo poprawne działanie storny internetowej wymaga istnienia plików
+- `log.txt`
+- `sleep_time.txt`
+- `status.txt`
+Które wymagają odpowienich uprawinień umożliwiających skryptom .php ich edycje.
 
 
 # Wstęp
